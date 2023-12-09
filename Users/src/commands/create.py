@@ -1,7 +1,7 @@
 # Importación de dependencias
 from commands.base_command import BaseCommannd
 from errors.errors import ApiError, UserNameExists, UserEmailExists
-from validators.validators import validateSchema, create_user_schema
+from validators.validators import validate_schema, create_user_schema
 from models.models import db, User
 from sqlalchemy.exc import SQLAlchemyError
 import uuid
@@ -11,28 +11,28 @@ import traceback
 # Clase que contiene la logica de creción de usuarios
 class CreateUser(BaseCommannd):
     def __init__(self, user):
-        self.validateRequest(user)
+        self.validate_request(user)
 
     # Función que valida si existe un usuario con el username
-    def validateUserName(self, username):
-        userToConsult = User.query.filter(User.username == username).first()
-        if userToConsult != None:
+    def validate_user_name(self, username):
+        user_to_consult = User.query.filter(User.username == username).first()
+        if user_to_consult != None:
             raise UserNameExists
 
     # Función que valida si existe un usuario con el email
-    def validateEmail(self, email):
-        userToConsult = User.query.filter(User.email == email).first()
-        if userToConsult != None:
+    def validate_email(self, email):
+        user_to_consult = User.query.filter(User.email == email).first()
+        if user_to_consult != None:
             raise UserEmailExists# pragma: no cover
 
     # Función que permite generar el password
-    def generatePassword(self, salt):
+    def generate_password(self, salt):
         return hashlib.sha512(self.password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
 
     # Función que valida el request del servicio
-    def validateRequest(self, userJson):
+    def validate_request(self, userJson):
         # Validacion del request
-        validateSchema(userJson, create_user_schema)
+        validate_schema(userJson, create_user_schema)
         # Asignacion de variables
         self.username = userJson['username']
         self.password = userJson['password']
@@ -53,21 +53,21 @@ class CreateUser(BaseCommannd):
     # Función que realiza creación del usuario
     def execute(self):
         try:
-            self.validateUserName(self.username)
-            self.validateEmail(self.email)
+            self.validate_user_name(self.username)
+            self.validate_email(self.email)
             salt = uuid.uuid4().hex
-            newUser = User(
+            new_user = User(
                 username=self.username,
                 email=self.email,
                 phone_number=self.phone_number,
                 dni=self.dni,
                 full_name=self.full_name,
-                password=self.generatePassword(salt),
+                password=self.generate_password(salt),
                 salt=salt
             )
-            db.session.add(newUser)
+            db.session.add(new_user)
             db.session.commit()
-            return newUser
+            return new_user
         except SQLAlchemyError as e:# pragma: no cover
             traceback.print_exc()
             raise ApiError(e)

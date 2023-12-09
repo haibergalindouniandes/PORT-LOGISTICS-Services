@@ -2,7 +2,7 @@
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_cors import CORS
-from blueprints.resources import users_blueprint
+from blueprints.resources import users_blueprint, api_v1, api_v2
 from errors.errors import ApiError
 from models.models import db
 import os
@@ -15,7 +15,11 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
+# Registro de Blueprints en la aplicación
 app.register_blueprint(users_blueprint)
+app.register_blueprint(api_v1, url_prefix='/v1')
+app.register_blueprint(api_v2, url_prefix='/v2')
+# Asignación de contexto
 app_context = app.app_context()
 app_context.push()
 cors = CORS(app)

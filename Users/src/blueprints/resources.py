@@ -4,14 +4,31 @@ from commands.create import CreateUser
 from queries.detail import GetUserDetail
 from utilities.utilities import formatDateTimeToUTC
 
+# Creación de Blueprints para las diferentes versiones y APIs
 users_blueprint = Blueprint('users', __name__)
 
-@users_blueprint.route('/users/me', methods=['GET'])
-def detail():
+@users_blueprint.route("/", methods=["GET"])
+def healthcheck():
+    """Expone el recurso para validar el estado de la aplicación.
+
+    Args:
+        N/A
+
+    Returns:
+        Objeto Json: 
+            - status (String): Estado de la aplicación.
+
+    """                
+    return jsonify({'status': 'UP'})
+
+api_v1 = Blueprint('api_v1', __name__)
+
+@api_v1.route('/users/<string:user_id>', methods=['GET'])
+def detail(user_id):
     """Expone el recurso para la actualización de información de un usuario.
 
     Args:
-        headers (Objeto): Cabeceras.
+        user_id (String): ID del usuario.
 
     Returns:
         Objeto Json: 
@@ -28,11 +45,10 @@ def detail():
 
     """
     
-    data = request.headers
-    result = GetUserDetail(data).query()
+    result = GetUserDetail(user_id).query()
     return jsonify({'id': result.id, 'username': result.username, 'email': result.email, 'full_name': result.full_name, 'dni': result.dni, 'phone_number': result.phone_number, 'status': result.status})
 
-@users_blueprint.route('/users', methods=['POST'])
+@api_v1.route('/users', methods=['POST'])
 def create():
     """Expone el recurso para el registro de información de un usuario.
 
@@ -60,8 +76,13 @@ def create():
     result = CreateUser(data).execute()
     return jsonify({'id': result.id, 'created_at': formatDateTimeToUTC(str(result.created_at))}), 201
 
-@users_blueprint.route("/", methods=["GET"])
-def healthcheck():
+
+
+# Vesrion 2 de la aplicación
+api_v2 = Blueprint('api_v2', __name__)
+
+@api_v2.route("/example", methods=["GET"])
+def example():
     """Expone el recurso para validar el estado de la aplicación.
 
     Args:
@@ -72,4 +93,4 @@ def healthcheck():
             - status (String): Estado de la aplicación.
 
     """                
-    return jsonify({'status': 'UP'})
+    return jsonify({'app_version': 'v2', 'status': 'UP'})

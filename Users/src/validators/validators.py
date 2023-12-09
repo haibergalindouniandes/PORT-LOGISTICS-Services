@@ -42,7 +42,7 @@ update_user_schema = {
 }
 
 # Función que valida el request para la creación de usuarios
-def validateSchema(json_data, schema):
+def validate_schema(json_data, schema):
     try:
         validate(instance=json_data, schema=schema)
     except jsonschema.exceptions.ValidationError as err:
