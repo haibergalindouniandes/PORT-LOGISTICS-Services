@@ -81,7 +81,7 @@ def create():
 # Vesrion 2 de la aplicación
 api_v2 = Blueprint('api_v2', __name__)
 
-@api_v2.route("/example", methods=["GET"])
+@api_v2.route("/users", methods=["GET"])
 def example():
     """Expone el recurso para validar el estado de la aplicación.
 
