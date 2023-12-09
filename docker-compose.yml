@@ -1,0 +1,48 @@
+version: '3'
+services:
+  users-db:
+    container_name: users-db
+    image: postgres:14.1-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: usersdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    restart: always
+    networks:
+      - users-net   
+  
+  mcs-users:
+    container_name: mcs-users
+    build: 
+      context: ./Users
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      CONNECTION_STRING: "postgresql://admin:admin@users-db:5432/usersdb"
+    restart: always
+    networks:
+      - users-net 
+      - app-net
+    depends_on:
+      - users-db
+  
+  nginx:
+    container_name: api-gateway
+    image: nginx:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - ./Nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app-net
+    depends_on:
+      - mcs-users
+
+networks:
+  app-net:
+    driver: bridge
+  users-net:
+    driver: bridge
