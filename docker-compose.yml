@@ -1,33 +1,33 @@
 version: '3'
 services:
-  users-db:
-    container_name: users-db
+  notifications-db:
+    container_name: notifications-db
     image: postgres:14.1-alpine
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: usersdb
+      POSTGRES_DB: notificationsdb
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     restart: always
     networks:
-      - users-net   
+      - notifications-net
   
-  mcs-users:
-    container_name: mcs-users
+  mcs-notifications:
+    container_name: mcs-notifications
     build: 
-      context: ./Users
+      context: ./Notifications
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
-      CONNECTION_STRING: "postgresql://admin:admin@users-db:5432/usersdb"
+      CONNECTION_STRING: "postgresql://admin:admin@notifications-db:5432/notificationsdb"
     restart: always
     networks:
-      - users-net 
+      - notifications-net 
       - app-net
     depends_on:
-      - users-db
+      - notifications-db
   
   nginx:
     container_name: api-gateway
@@ -39,10 +39,10 @@ services:
     networks:
       - app-net
     depends_on:
-      - mcs-users
+      - mcs-notifications
 
 networks:
   app-net:
     driver: bridge
-  users-net:
+  notifications-net:
     driver: bridge
