@@ -5,7 +5,7 @@ on:
     branches:
       - master
 jobs:
-  Test_Coverage_Users:
+  Test_Coverage_Notifications:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,10 +18,10 @@ jobs:
       - name: Install pipenv for notifications mcs
         working-directory: ./Notifications
         run: pip install pipenv
-      - name: Install dependencies for users mcs
+      - name: Install dependencies for notifications mcs
         working-directory: ./Notifications
         run: pipenv install --system --deploy
-      - name: Run unit tests for users mcs
+      - name: Run unit tests for notitications mcs
         working-directory: ./Notifications  
         run: pytest --cov-fail-under=70 --cov=src
       - name: CleanUp after test
