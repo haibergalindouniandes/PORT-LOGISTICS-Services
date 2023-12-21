@@ -1,0 +1,24 @@
+name: Test coverage
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+jobs:
+  Test_Coverage_Users:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.10 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create the Test DB
+        run: docker run -d -p 5432:5432 --name notificationsdb -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=notificationsdb postgres:14.1
+      - name: Install pipenv for notifications mcs
+        run: pip install pipenv
+      - name: Install dependencies for users mcs
+        run: pipenv install --system --deploy
+      - name: Run unit tests for users mcs
+        run: pytest --cov-fail-under=70 --cov=src
+      - name: CleanUp after test
+        run: docker rm -vf $(docker ps -aq) && docker rmi -f $(docker images -aq)
