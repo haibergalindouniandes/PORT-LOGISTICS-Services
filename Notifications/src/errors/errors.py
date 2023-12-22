@@ -11,7 +11,7 @@ class NotificactionAlreadyExists(ApiError):
 # Clase que contiene la estructura de un error cuando se encuentra información
 class NotFound(ApiError):
     code = 404
-    description = "No se encontró información con los parámetros enviados"
+    description = "No se encontró información"
 
 # Clase que contiene la estructura de error cuando no se envia el token
 class MissingToken(ApiError):

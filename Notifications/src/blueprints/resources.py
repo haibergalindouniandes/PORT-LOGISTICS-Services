@@ -1,5 +1,8 @@
+from utils.utils import success_create_response
+from utils.utils import success_query_response
 from flask import request, Blueprint
 from flask.json import jsonify
+from queries.get import GetNotifications
 from commands.create import CreateNotification
 
 # Creación de Blueprints para las diferentes versiones y APIs
@@ -38,8 +41,7 @@ def create():
 
     Returns:
         payload: 
-            - code (Integer): Código de respuesta.
-            - description (String): Descripción de la respuesta.
+            - description (String): Descripción en caso de presentarse un error.
             - data (Objeto Json): 
                 - id (Integer): Identificación de la notificación.
                 - name (String): Titulo de la notificación.
@@ -54,4 +56,30 @@ def create():
 
     """
     data = request.get_json()
-    return CreateNotification(data).execute()
+    return success_create_response(CreateNotification(data).execute())
+
+@api_v1.route("/notifications", methods=["GET"])
+def get_notifcations():
+    """Expone el recurso para consultar todas las notificaciones.
+
+    Args:
+        headers (Objeto): Cabeceras.
+        payload: N/A
+
+    Returns:
+        payload: 
+            - description (String): Descripción en caso de presentarse un error.
+            - data (Array Objeto Json): 
+                - id (Integer): Identificación de la notificación.
+                - name (String): Titulo de la notificación.
+                - rol (String): Rol del usuario.
+                - type (String): Tipo de la notificación.
+                - template (String): Plantilla con la estrucuta de la notificación.
+                - description (String): Contenido de la notificación.
+                - status (String): Estado de la notificación.
+                - created_by (Integer): Usuario que creo la notificación.
+                - created_at (String): Fecha de creación de la notificación.
+                - updated_at (String): Fecha de actualización de la notificación.
+
+    """                
+    return success_query_response(GetNotifications().query())
