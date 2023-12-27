@@ -19,8 +19,9 @@ class TestResources():
     data = {}
     create_notification_rs = {}
     get_notifications_rs = {}
+    get_notification_by_id_rs = {}
 
-    # Función que genera data del usuario
+    # Función que genera data de la notificación
     def set_up(self):
         list_roles = ["Administrador", "Auxilar administrativo", "Conductor"]
         list_not_type = ["Cambio de fechas en el Booking", "Cargue exitoso", "La bodega ya puede recibir el contenedor", "Orden cerrada"]
@@ -69,12 +70,19 @@ class TestResources():
             self.get_notifications_rs = test_client.get(
                 '/api/v1/notifications'
             )
+
+ # Función que consume el api para la consulta de notificaciones
+    def execute_get_notification_by_id(self, notificationId):
+        with app.test_client() as test_client:
+            self.get_notification_by_id_rs = test_client.get(
+                f"/api/v1/notifications/{notificationId}"
+            )
        
     # Función que valida la creación exitosa de una notificación
     def test_create_success_notification(self):
         # Generación data aleatoria 
         self.set_up()
-        # Creación nuevo usuario
+        # Creación nuevo notificación
         self.execute_create_notification(self.data)        
         # Validación creación exitosa
         self.validate_create_success_notification()        
@@ -85,7 +93,7 @@ class TestResources():
         for i in range(iterations):
             # Generación data aleatoria 
             self.set_up()
-            # Creación nuevo usuario
+            # Creación nueva notificación
             self.execute_create_notification(self.data)  
 
         self.execute_get_notifications()
@@ -93,3 +101,25 @@ class TestResources():
         response_json = json.loads(self.get_notifications_rs.data)["data"]
         assert len(response_json) >= iterations
         assert json.loads(self.create_notification_rs.data)["data"] in response_json
+        
+    # Función que valida la consulta exitosa de notificaciones
+    def test_get_notification_by_id(self):
+        # Generación data aleatoria 
+        self.set_up()
+        # Creación nueva notificación
+        self.execute_create_notification(self.data)
+        notification_created = json.loads(self.create_notification_rs.data)["data"] 
+        # Consulta de notificación 
+        self.execute_get_notification_by_id(notification_created["id"])
+        assert self.get_notification_by_id_rs.status_code == 200
+        response_json = json.loads(self.get_notification_by_id_rs.data)["data"]
+        assert notification_created["id"] == response_json["id"]
+        assert notification_created["name"] == response_json["name"]
+        assert notification_created["rol"] == response_json["rol"]
+        assert notification_created["type"] == response_json["type"]
+        assert notification_created["template"] == response_json["template"]
+        assert notification_created["description"] == response_json["description"]
+        assert notification_created["status"] == response_json["status"]
+        assert notification_created["status"] == response_json["status"]
+        assert notification_created["created_by"] == response_json["created_by"]
+        assert notification_created["updated_at"] == response_json["updated_at"]    
