@@ -1,11 +1,13 @@
 # Importación de dependencias
-from utils.utils import success_create_response
 from commands.base_command import BaseCommannd
 from errors.errors import ApiError, NotificactionAlreadyExists
 from validators.validators import validate_schema, create_notification_schema
 from models.models import db, Notification, NotificationSchema
 from sqlalchemy.exc import SQLAlchemyError
 import traceback
+
+# Creacion de esquemas
+notification_schema = NotificationSchema()
 
 # Clase que contiene la logica de creción de usuarios
 class CreateNotification(BaseCommannd):
@@ -35,9 +37,8 @@ class CreateNotification(BaseCommannd):
                                             description=self.data['description'], 
                                             created_by=self.data['created_by'])
             db.session.add(new_notification)
-            db.session.commit()
-            notification_schema = NotificationSchema()
-            return success_create_response(notification_schema.dump(new_notification))
+            db.session.commit()            
+            return notification_schema.dump(new_notification)
         except SQLAlchemyError as e:# pragma: no cover
             traceback.print_exc()
             raise ApiError(e)
