@@ -1,7 +1,7 @@
 # Importación de dependencias
+from validators.validators import validate_schema, create_notification_schema
 from commands.base_command import BaseCommannd
 from errors.errors import ApiError, NotificactionAlreadyExists
-from validators.validators import validate_schema, create_notification_schema
 from models.models import db, Notification, NotificationSchema
 from sqlalchemy.exc import SQLAlchemyError
 import traceback
@@ -9,24 +9,19 @@ import traceback
 # Creacion de esquemas
 notification_schema = NotificationSchema()
 
-# Clase que contiene la logica de creción de usuarios
+# Clase que contiene la logica de creción de notificaciones
 class CreateNotification(BaseCommannd):
     def __init__(self, notification):
-        self.validate_request(notification)
-        self.data = notification['data']
-
-    # Función que valida el request del servicio
-    def validate_request(self, notification):
-        # Validacion del request
         validate_schema(notification, create_notification_schema)
-        
+        self.data = notification
+
     # Función que valida si ya se encuentra registrada una notificación con el mismo nombre
     def validate_notification_name(self, name):
         notification = Notification.query.filter(Notification.name == name).first()
         if notification != None:
             raise NotificactionAlreadyExists# pragma: no cover
 
-    # Función que realiza creación del usuario
+    # Función que realiza creación de la notificación
     def execute(self):
         try:
             # Validación del nombre de la notificación
