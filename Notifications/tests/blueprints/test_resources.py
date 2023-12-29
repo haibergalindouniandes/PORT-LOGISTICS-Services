@@ -17,6 +17,7 @@ class TestResources():
     description = None
     created_by = None
     data = {}
+    health_check_rs = {}
     create_notification_rs = {}
     get_notifications_rs = {}
     get_notification_by_id_rs = {}
@@ -41,6 +42,13 @@ class TestResources():
                             "created_by": self.created_by
                         }
                     }
+
+    # Función que consume el api health check
+    def execute_health_check(self):
+        with app.test_client() as test_client:
+            self.health_check_rs = test_client.get(
+                '/'
+            )
             
     # Función que consume el api para la creación de una notificación
     def execute_create_notification(self, data):
@@ -64,19 +72,24 @@ class TestResources():
         assert response_json['description'] == self.description
         assert response_json['created_by'] == self.created_by
 
- # Función que consume el api para la consulta de notificaciones
+    # Función que consume el api para la consulta de notificaciones
     def execute_get_notifications(self):
         with app.test_client() as test_client:
             self.get_notifications_rs = test_client.get(
                 '/api/v1/notifications'
             )
 
- # Función que consume el api para la consulta de notificaciones
+    # Función que consume el api para la consulta de notificaciones
     def execute_get_notification_by_id(self, notificationId):
         with app.test_client() as test_client:
             self.get_notification_by_id_rs = test_client.get(
                 f"/api/v1/notifications/{notificationId}"
             )
+
+    # Función que valida el health check
+    def test_health_check(self):
+        self.execute_health_check()
+        assert self.health_check_rs.status_code == 200
        
     # Función que valida la creación exitosa de una notificación
     def test_create_success_notification(self):

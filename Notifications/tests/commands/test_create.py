@@ -17,7 +17,7 @@ class TestCreate():
     created_by = None
     data = {}
 
-    # Función que genera data del usuario
+    # Función que genera data de la notificación
     def set_up(self):
         list_roles = ["Administrador", "Auxilar administrativo", "Conductor"]
         list_not_type = ["Cambio de fechas en el Booking", "Cargue exitoso", "La bodega ya puede recibir el contenedor", "Orden cerrada"]
@@ -28,14 +28,12 @@ class TestCreate():
         self.description = self.dataFactory.sentence(nb_words=5)
         self.created_by = self.dataFactory.random_int(100, 1000)
         self.data = {
-                        "data": {
-                            "name": f"{self.name}",
-                            "rol": f"{self.rol}",
-                            "type": f"{self.type}",
-                            "template": f"{self.template}",
-                            "description": f"{self.description}",
-                            "created_by": self.created_by
-                        }
+                        "name": f"{self.name}",
+                        "rol": f"{self.rol}",
+                        "type": f"{self.type}",
+                        "template": f"{self.template}",
+                        "description": f"{self.description}",
+                        "created_by": self.created_by
                     }
             
     # Función que valida la creación exitosa de una notificación
@@ -61,13 +59,11 @@ class TestCreate():
             # Creación notificación
             self.set_up()
             data = {
-                        "data": {
-                            "name": f"{self.name}",
-                            "rol": f"{self.rol}",
-                            "type": f"{self.type}"
-                        }
+                        "name": f"{self.name}",
+                        "rol": f"{self.rol}",
+                        "type": f"{self.type}"
                     }
-            # Creación usuario con data incompleta
+            # Creación notificación con data incompleta
             CreateNotification(data).execute()
         except Exception as e:
             assert e.code == 400        

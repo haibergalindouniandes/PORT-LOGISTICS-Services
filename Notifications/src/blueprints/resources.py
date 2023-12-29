@@ -1,10 +1,9 @@
-from utils.utils import success_create_response
-from utils.utils import success_query_response
 from flask import request, Blueprint
 from flask.json import jsonify
 from queries.get_by_id import GetNotificationById
 from queries.get import GetNotifications
 from commands.create import CreateNotification
+from commands.update import UpdateNotification
 
 # Creación de Blueprints para las diferentes versiones y APIs
 healthcheck_blueprint = Blueprint('notifications', __name__)
@@ -25,7 +24,7 @@ def healthcheck():
 
 api_v1 = Blueprint('api_v1', __name__)
 
-@api_v1.route('/notifications', methods=['POST'])
+@api_v1.route('/notifications', methods=['POST'], endpoint='create')
 def create():
     """Expone el recurso para realizar la creación de una notificación.
 
@@ -57,10 +56,10 @@ def create():
 
     """
     data = request.get_json()
-    return success_create_response(CreateNotification(data).execute())
+    return jsonify(CreateNotification(data).execute()), 201
 
-@api_v1.route("/notifications", methods=["GET"])
-def get_notifcations():
+@api_v1.route("/notifications", methods=["GET"], endpoint='get_notifications')
+def get_notifications():
     """Expone el recurso para consultar todas las notificaciones.
 
     Args:
@@ -83,10 +82,10 @@ def get_notifcations():
                 - updated_at (String): Fecha de actualización de la notificación.
 
     """                
-    return success_query_response(GetNotifications().query())
+    return jsonify(GetNotifications().query())
 
-@api_v1.route("/notifications/<string:notificationId>", methods=["GET"])
-def get_notifcation_by_id(notificationId):
+@api_v1.route("/notifications/<string:notificationId>", methods=["GET"], endpoint='get_notification_by_id')
+def get_notification_by_id(notificationId):
     """Expone el recurso para consultar un notificacion con base al ID.
 
     Args:
@@ -110,4 +109,37 @@ def get_notifcation_by_id(notificationId):
                 - created_at (String): Fecha de creación de la notificación.
                 - updated_at (String): Fecha de actualización de la notificación.
     """                
-    return success_query_response(GetNotificationById(notificationId).query())
+    return jsonify(GetNotificationById(notificationId).query())
+
+@api_v1.route('/notifications/<string:notificationId>', methods=['PATCH'], endpoint='update')
+def update(notificationId):
+    """Expone el recurso para realizar la creación de una notificación.
+
+    Args:
+        headers (Objeto): Cabeceras.
+        payload: 
+            - data (Objeto Json): 
+                - name (String): Titulo de la notificación.
+                - rol (String): Rol del usuario.
+                - type (String): Tipo de la notificación.
+                - template (String): Plantilla con la estrucuta de la notificación.
+                - description (String): Contenido de la notificación.
+                - created_by (Integer): Usuario que creo la notificación.
+
+    Returns:
+        payload: 
+            - description (String): Descripción en caso de presentarse un error.
+            - data (Objeto Json): 
+                - id (Integer): Identificación de la notificación.
+                - name (String): Titulo de la notificación.
+                - rol (String): Rol del usuario.
+                - type (String): Tipo de la notificación.
+                - template (String): Plantilla con la estrucuta de la notificación.
+                - description (String): Contenido de la notificación.
+                - status (String): Estado de la notificación.
+                - created_by (Integer): Usuario que creo la notificación.
+                - created_at (String): Fecha de creación de la notificación.
+                - updated_at (String): Fecha de actualización de la notificación.
+    """
+    data = request.get_json()
+    return UpdateNotification(notificationId, data).execute()

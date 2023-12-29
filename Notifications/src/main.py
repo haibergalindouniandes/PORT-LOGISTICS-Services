@@ -1,7 +1,8 @@
 # Importación de dependencias
-from flask import Flask, jsonify
+from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
+from middlewares.handlers import Handlers
 from blueprints.resources import healthcheck_blueprint, api_v1 
 from errors.errors import ApiError
 from models.models import db
@@ -22,17 +23,15 @@ app.register_blueprint(api_v1, url_prefix='/api/v1')
 app_context = app.app_context()
 app_context.push()
 cors = CORS(app)
+# Asignación de handlers
+handlers = Handlers()
+app.before_request(handlers.before_request_handler)
+app.after_request(handlers.after_request_handler)
+app.errorhandler(ApiError)(handlers.exception_handler)
+# Creación de la estructura de BD
 db.init_app(app)
 db.create_all()
 api = Api(app)
-
-# Manejador de errores
-@app.errorhandler(ApiError)
-def handle_exception(err):
-    response = {
-        "description": err.description
-    }
-    return jsonify(response), err.code
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

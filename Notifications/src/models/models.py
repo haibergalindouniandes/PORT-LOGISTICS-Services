@@ -27,7 +27,7 @@ class Notification(db.Model):
                       db.Index('idx_status', 'status'),)
     
 
-# Clase que autogenera el esquema del modelo Usuario
+# Clase que autogenera el esquema del modelo notificación
 class NotificationSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Notification
