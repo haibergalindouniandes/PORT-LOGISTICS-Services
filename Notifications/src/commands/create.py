@@ -12,6 +12,7 @@ notification_schema = NotificationSchema()
 # Clase que contiene la logica de creción de notificaciones
 class CreateNotification(BaseCommannd):
     def __init__(self, notification):
+        print(notification)
         validate_schema(notification, create_notification_schema)
         self.data = notification
 

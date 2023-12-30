@@ -69,7 +69,7 @@ class TestUpdate():
         try:
             # Actualización notificación
             self.set_up()
-            UpdateNotification(10000000000, self.data).execute()
+            UpdateNotification(10000000, self.data).execute()
         except Exception as e:
             assert e.code == 404
    

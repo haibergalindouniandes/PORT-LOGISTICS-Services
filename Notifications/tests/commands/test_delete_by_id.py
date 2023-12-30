@@ -1,4 +1,5 @@
-from src.queries.get_by_id import GetNotificationById
+from src.errors.errors import SuccessDelete
+from src.commands.delete_by_id import DeleteNotificationById
 from src.commands.create import CreateNotification
 from faker import Faker
 import random
@@ -6,7 +7,7 @@ import time
 import src.main
 
 # Clase que contiene la logica de las pruebas del servicio
-class TestGetById():
+class TestDeleteById():
     
     # Declaración constantes
     dataFactory = Faker()
@@ -17,7 +18,6 @@ class TestGetById():
     description = None
     created_by = None
     data = {}
-    created_notification = None
 
     # Función que genera data de la notificación
     def set_up(self):
@@ -38,33 +38,26 @@ class TestGetById():
                         "created_by": self.created_by
                     }
             
-    # Función realiza creación exitosa de una notificación
+    # Función que valida la creación exitosa de una notificación
     def create_notification(self):
         # Creación de notificación
         self.set_up()
         notification = CreateNotification(self.data).execute()
         self.created_notification = notification
-        
-    # Función que valida la respuesta cuando no hay notificaciones registradas
-    def test_notification_not_found(self):
+    
+    # Función que valida la actualización exitosa de una notificación
+    def test_delete_notification(self):
+        # Creación de notificación
+        self.create_notification()
+        deleted_notification = DeleteNotificationById(self.created_notification["id"]).execute()
+        assert deleted_notification != None
+        assert deleted_notification["description"] == SuccessDelete.description
+    
+    # Función que valida la actualización de una notificación no se encuentra registrada
+    def test_delete_not_existing_notification(self):
         try:
-            GetNotificationById(10000000).query()
+            # Actualización notificación
+            self.set_up()
+            DeleteNotificationById(10000000).execute()
         except Exception as e:
-            assert e.code == 404      
-
-   # Función que valida la consulta exitosa de notificaciones
-    def test_get_notification(self):
-        iterations = 10
-        for i in range(iterations):
-            self.create_notification()
-        notification = GetNotificationById(self.created_notification["id"]).query()
-        assert notification != None
-        assert self.created_notification["id"] == notification["id"]
-        assert self.created_notification["name"] == notification["name"]
-        assert self.created_notification["rol"] == notification["rol"]
-        assert self.created_notification["type"] == notification["type"]
-        assert self.created_notification["template"] == notification["template"]
-        assert self.created_notification["description"] == notification["description"]
-        assert self.created_notification["status"] == notification["status"]
-        assert self.created_notification["created_by"] == notification["created_by"]
-        assert self.created_notification["updated_at"] == notification["updated_at"]
+            assert e.code == 404

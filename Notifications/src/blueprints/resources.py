@@ -1,5 +1,7 @@
 from flask import request, Blueprint
 from flask.json import jsonify
+from errors.errors import HealthCheckUp
+from commands.delete_by_id import DeleteNotificationById
 from queries.get_by_id import GetNotificationById
 from queries.get import GetNotifications
 from commands.create import CreateNotification
@@ -20,7 +22,8 @@ def healthcheck():
             - status (String): Estado de la aplicación.
 
     """                
-    return jsonify({'status': 'UP'})
+    response = jsonify({'description': HealthCheckUp.description})
+    return response
 
 api_v1 = Blueprint('api_v1', __name__)
 
@@ -143,3 +146,19 @@ def update(notificationId):
     """
     data = request.get_json()
     return UpdateNotification(notificationId, data).execute()
+
+@api_v1.route("/notifications/<string:notificationId>", methods=["DELETE"], endpoint='delete_notification_by_id')
+def delete_notification_by_id(notificationId):
+    """Expone el recurso para consultar un notificacion con base al ID.
+
+    Args:
+        headers (Objeto): Cabeceras.
+        payload: N/A
+        path parameters:
+            - notificationId: ID de la notificación a consultar.
+
+    Returns:
+        payload: 
+            - description (String): Descripción de la eliminación.
+    """                
+    return jsonify(DeleteNotificationById(notificationId).execute())
