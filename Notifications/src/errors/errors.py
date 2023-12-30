@@ -6,7 +6,7 @@ class ApiError(Exception):
 # Clase que contiene la estructura de un error cuando se trata de crear una notificación con el mismo titulo
 class NotificactionAlreadyExists(ApiError):
     code = 409
-    description = "La notificación ya se encutra registrada"
+    description = "La notificación ya se encuentra registrada"
 
 # Clase que contiene la estructura de un error cuando se encuentra información
 class NotFound(ApiError):
@@ -27,3 +27,13 @@ class InvalidToken(ApiError):
 class BadRequest(ApiError):
     code = 400
     description = "Error en la estructura, formato y/o tipos de datos de la peticion"
+
+# Clase que contiene la estructura de un error de tipo eliminación exitosa
+class SuccessDelete(ApiError):
+    code = 200
+    description = "La notificación fue eliminada exitosamente"
+
+# Clase que contiene la estructura de un error de tipo eliminación exitosa
+class HealthCheckUp(ApiError):
+    code = 200
+    description = "Server is UP!"
