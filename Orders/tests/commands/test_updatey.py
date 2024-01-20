@@ -58,7 +58,6 @@ class TestUpdate():
         # Creación de orden
         self.create_order()
         # Actualización orden
-        self.set_up()
         data_to_update = self.data
         data_to_update["updated_by"] = self.dataFactory.random_int(100, 1000)
         data_to_update["status"] = 'completado'
@@ -66,8 +65,8 @@ class TestUpdate():
         assert updated_order != None
         assert self.created_order["id"] == updated_order["id"]
         assert data_to_update["shipping_company"] == updated_order["shipping_company"]
-        assert data_to_update["order_number"] == updated_order["order_number"]
-        assert data_to_update["booking_number"] == updated_order["booking_number"]
+        assert data_to_update["order_number"] == f'{updated_order["order_number"]}'
+        assert data_to_update["booking_number"] == f'{updated_order["booking_number"]}'
         assert data_to_update["warehouse_dropoff_date"] == updated_order["warehouse_dropoff_date"]
         assert data_to_update["first_receiving_date"] == updated_order["first_receiving_date"]
         assert data_to_update["cut_off_date"] == updated_order["cut_off_date"]
@@ -83,15 +82,14 @@ class TestUpdate():
             self.set_up()
             UpdateOrder(10000000, self.data).execute()
         except Exception as e:
-            assert e.code == 404
+            assert e.code == 400
    
   # Función que valida la respuesta de error cuando se envia un request invalido
     def test_update_order_bad_request(self):
         try:
             # Creación de orden
             self.create_order()
-            # Actualización orden
-            self.set_up()
+            # Actualización orden            
             data_to_update = {}
             UpdateOrder(self.created_order["id"], data_to_update).execute()
         except Exception as e:

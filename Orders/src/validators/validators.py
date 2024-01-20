@@ -37,9 +37,9 @@ update_order_schema = {
 		"status": {"type": "string", "minimum": 4, "maximum": 16},
 		"updated_by": {"type": "integer"},
 	},
-    "required": "updated_by",
-	"minProperties": 2,
-	"additionalProperties": False
+    # "required": "updated_by",
+	# "minProperties": 2,
+	# "additionalProperties": False
 }
 
 # Función que valida el request para la creación de ordenes

@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import traceback
 
 # Creacion de esquemas
-orders_schema = OrderSchema(many=True)
+orders_schema = OrderSchema()
 
 # Clase que contiene la logica de consulta de ordenes
 class GetOrders(BaseQuery):
@@ -17,7 +17,7 @@ class GetOrders(BaseQuery):
             orders = Orders.query.all()
             if len(orders) == 0:
                 raise BadRequest
-            return orders_schema.dump(orders)
+            return [orders_schema.dump(order) for order in orders]
         except SQLAlchemyError as e:# pragma: no cover
             traceback.print_exc()
             raise ApiError(e)

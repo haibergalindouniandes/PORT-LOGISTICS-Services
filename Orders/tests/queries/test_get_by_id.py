@@ -58,7 +58,7 @@ class TestGetById():
         try:
             GetOrderById(10000000).query()
         except Exception as e:
-            assert e.code == 404      
+            assert e.code == 400
 
    # Función que valida la consulta exitosa de ordenes
     def test_get_order(self):

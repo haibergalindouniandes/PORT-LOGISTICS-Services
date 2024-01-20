@@ -61,13 +61,13 @@ class TestResources():
     # Función que valida la creación exitosa de una orden
     def validate_create_successful_order(self): 
         assert self.create_order_rs.status_code == 201
-        response_json = json.loads(self.create_order_rs.data)["data"]
+        response_json = json.loads(self.create_order_rs.data) #["data"]
         assert 'id' in response_json
         assert 'created_at' in response_json        
         assert 'status' in response_json
-        assert response_json['shipping_company'] == self.shipping_company
-        assert response_json['order_number'] == self.order_number
-        assert response_json['booking_number'] == self.booking_number
+        assert response_json['shipping_company'] == self.shipping_company        
+        assert response_json['order_number'] == f"{self.order_number}"
+        assert response_json['booking_number'] == f"{self.booking_number}"
         assert response_json['warehouse_dropoff_date'] == self.warehouse_dropoff_date
         assert response_json['first_receiving_date'] == self.first_receiving_date
         assert response_json['cut_off_date'] == self.cut_off_date
@@ -111,7 +111,7 @@ class TestResources():
         assert self.get_order_rs.status_code == 200
         response_json = json.loads(self.get_order_rs.data)["data"]
         assert len(response_json) >= iterations
-        assert json.loads(self.create_order_rs.data)["data"] in response_json
+        assert json.loads(self.create_order_rs.data) in response_json
         
     # Función que valida la consulta exitosa de ordenes
     def test_get_order_by_id(self):
@@ -119,11 +119,11 @@ class TestResources():
         self.set_up()
         # Creación nueva orden
         self.execute_create_order(self.data)
-        order_created = json.loads(self.create_order_rs.data)["data"] 
+        order_created = json.loads(self.create_order_rs.data) #["data"] 
         # Consulta de orden 
         self.execute_get_order_by_id(order_created["id"])
         assert self.get_order_by_id_rs.status_code == 200
-        response_json = json.loads(self.get_order_by_id_rs.data)["data"]
+        response_json = json.loads(self.get_order_by_id_rs.data) #["data"]
         assert order_created["id"] == response_json["id"]
         assert order_created["shipping_company"] == response_json["shipping_company"]
         assert order_created["order_number"] == response_json["order_number"]

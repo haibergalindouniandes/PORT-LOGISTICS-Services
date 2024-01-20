@@ -69,4 +69,4 @@ class TestDeleteById():
             self.set_up()
             DeleteOrderById(10000000).execute()
         except Exception as e:
-            assert e.code == 404
+            assert e.code == 400

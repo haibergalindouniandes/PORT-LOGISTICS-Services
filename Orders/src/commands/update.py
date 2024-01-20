@@ -46,7 +46,8 @@ class UpdateOrder(BaseCommannd):
             order_to_update.cut_off_date = cut_off_date
         if "status" in self.data:
             order_to_update.status = self.data["status"]
-        order_to_update.updated_by = self.data["updated_by"]
+        if "updated_by" in self.data:        
+            order_to_update.updated_by = self.data["updated_by"]
         order_to_update.updated_at = datetime.utcnow()
         return order_to_update
 
