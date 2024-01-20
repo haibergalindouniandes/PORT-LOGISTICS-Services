@@ -29,7 +29,7 @@ jobs:
         run: docker rm -vf $(docker ps -aq) && docker rmi -f $(docker images -aq)
       - name: Create Orders Test DB
         working-directory: ./Orders
-        run: docker run -d -p 5433:5432 --name ordersdb -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=ordersdb postgres:14.1
+        run: docker run -d -p 5432:5432 --name ordersdb -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=ordersdb postgres:14.1
       - name: Install pipenv for orders mcs
         working-directory: ./Orders
         run: pip install pipenv
