@@ -27,3 +27,18 @@ jobs:
       - name: CleanUp after test
         working-directory: ./Notifications
         run: docker rm -vf $(docker ps -aq) && docker rmi -f $(docker images -aq)
+      - name: Create Orders Test DB
+        working-directory: ./Orders
+        run: docker run -d -p 5432:5432 --name ordersdb -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=ordersdb postgres:14.1
+      - name: Install pipenv for orders mcs
+        working-directory: ./Orders
+        run: pip install pipenv
+      - name: Install dependencies for orders mcs
+        working-directory: ./Orders
+        run: pipenv install --system --deploy
+      - name: Run unit tests for orders mcs
+        working-directory: ./Orders  
+        run: pytest --cov-fail-under=70 --cov=src
+      - name: CleanUp after test
+        working-directory: ./Orders
+        run: docker rm -vf $(docker ps -aq) && docker rmi -f $(docker images -aq)

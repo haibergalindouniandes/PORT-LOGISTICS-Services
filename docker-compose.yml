@@ -1,5 +1,34 @@
 version: '3'
 services:
+  orders-db:
+    container_name: orders-db
+    image: postgres:14.1-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: ordersdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    restart: always
+    networks:
+      - orders-net
+
+  mcs-orders:
+    container_name: mcs-orders
+    build: 
+      context: ./Orders
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      CONNECTION_STRING: "postgresql://admin:admin@orders-db:5432/ordersdb"
+    restart: always
+    networks:
+      - orders-net 
+      - app-net
+    depends_on:
+      - orders-db
+
   notifications-db:
     container_name: notifications-db
     image: postgres:14.1-alpine
@@ -45,4 +74,6 @@ networks:
   app-net:
     driver: bridge
   notifications-net:
+    driver: bridge
+  orders-net:
     driver: bridge
